@@ -6,8 +6,11 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,30 +18,30 @@ import java.util.stream.Collectors;
 public class AlmostKube extends KubeJSPlugin {
 
     @Override
-    public void addBindings(BindingsEvent event) {
+    public void registerBindings(BindingsEvent event) {
         if (event.type == ScriptType.SERVER) {
             event.add("AlmostUnified", UnifyWrapper.class);
         }
     }
 
     public static class UnifyWrapper {
-        public static String getPreferredTagForItem(ItemStackJS item) {
+        public static String getPreferredTagForItem(ItemStack stack) {
             UnifyTag<Item> tag = AlmostUnified
                     .getRuntime()
                     .getReplacementMap()
-                    .getPreferredTagForItem(new ResourceLocation(item.getId()));
+                    .getPreferredTagForItem(getId(stack));
             return tag == null ? null : tag.location().toString();
         }
 
-        public static ItemStackJS getReplacementForItem(ItemStackJS item) {
+        public static ItemStack getReplacementForItem(ItemStack stack) {
             ResourceLocation replacement = AlmostUnified
                     .getRuntime()
                     .getReplacementMap()
-                    .getReplacementForItem(new ResourceLocation(item.getId()));
+                    .getReplacementForItem(getId(stack));
             return ItemStackJS.of(replacement);
         }
 
-        public static ItemStackJS getPreferredItemForTag(ResourceLocation tag) {
+        public static ItemStack getPreferredItemForTag(ResourceLocation tag) {
             UnifyTag<Item> asUnifyTag = UnifyTag.item(tag);
             ResourceLocation item = AlmostUnified
                     .getRuntime()
@@ -66,6 +69,13 @@ public class AlmostKube extends KubeJSPlugin {
                     .stream()
                     .map(ResourceLocation::toString)
                     .collect(Collectors.toSet());
+        }
+
+        private static ResourceLocation getId(ItemStack stack) {
+            return Registry.ITEM
+                    .getResourceKey(stack.getItem())
+                    .map(ResourceKey::location)
+                    .orElseThrow(() -> new IllegalArgumentException("Item not found in registry"));
         }
     }
 }

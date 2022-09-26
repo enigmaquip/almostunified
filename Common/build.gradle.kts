@@ -38,12 +38,11 @@ dependencies {
     modCompileOnly("net.fabricmc:fabric-loader:$fabricLoaderVersion")
     mappings(loom.layered {
         officialMojangMappings()
-        // TODO: change this when updating to 1.19.2
-        parchment("org.parchmentmc.data:$mappingsChannel-$minecraftVersion.2:$mappingsVersion@zip")
+        parchment("org.parchmentmc.data:$mappingsChannel-$minecraftVersion:$mappingsVersion@zip")
     })
 
     modCompileOnly("mezz.jei:jei-$minecraftVersion-common:$jeiVersion") // required for common jei plugin and mixin
-    modCompileOnly("dev.latvian.mods:kubejs:$kubejsVersion") // required for common kubejs plugin
+    modCompileOnly("dev.latvian.mods:kubejs-forge:$kubejsVersion") // required for common kubejs plugin
 
     // JUnit Tests
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
